@@ -1,4 +1,5 @@
 import {
+  boolean,
   customType,
   foreignKey,
   index,
@@ -6,6 +7,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   unique,
@@ -31,6 +33,74 @@ export const deliveryAttemptOutcome = pgEnum("delivery_attempt_outcome", [
   "failed",
   "expired",
 ]);
+export const accountMemberRole = pgEnum("account_member_role", [
+  "owner",
+  "member",
+]);
+
+export const authUsers = pgTable("auth_users", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  emailVerified: boolean("email_verified").default(false).notNull(),
+  image: text("image"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const authSessions = pgTable(
+  "auth_sessions",
+  {
+    id: text("id").primaryKey(),
+    expiresAt: timestamp("expires_at").notNull(),
+    token: text("token").notNull().unique(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    userId: text("user_id")
+      .notNull()
+      .references(() => authUsers.id, { onDelete: "cascade" }),
+  },
+  (table) => [index("auth_sessions_user_id_index").on(table.userId)],
+);
+
+export const authAccounts = pgTable(
+  "auth_accounts",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id").notNull(),
+    providerId: text("provider_id").notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => authUsers.id, { onDelete: "cascade" }),
+    accessToken: text("access_token"),
+    refreshToken: text("refresh_token"),
+    idToken: text("id_token"),
+    accessTokenExpiresAt: timestamp("access_token_expires_at"),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+    scope: text("scope"),
+    password: text("password"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [index("auth_accounts_user_id_index").on(table.userId)],
+);
+
+export const authVerifications = pgTable(
+  "auth_verifications",
+  {
+    id: text("id").primaryKey(),
+    identifier: text("identifier").notNull(),
+    value: text("value").notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("auth_verifications_identifier_index").on(table.identifier),
+  ],
+);
 
 export const accounts = pgTable("accounts", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -39,6 +109,26 @@ export const accounts = pgTable("accounts", {
     .defaultNow()
     .notNull(),
 });
+
+export const accountMembers = pgTable(
+  "account_members",
+  {
+    accountId: uuid("account_id")
+      .notNull()
+      .references(() => accounts.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => authUsers.id, { onDelete: "cascade" }),
+    role: accountMemberRole("role").default("member").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.accountId, table.userId] }),
+    uniqueIndex("account_members_user_id_unique").on(table.userId),
+  ],
+);
 
 export const hooks = pgTable(
   "hooks",
@@ -59,6 +149,29 @@ export const hooks = pgTable(
   (table) => [
     unique("hooks_account_id_id_unique").on(table.accountId, table.id),
     uniqueIndex("hooks_account_id_name_unique").on(table.accountId, table.name),
+  ],
+);
+
+export const hookSecrets = pgTable(
+  "hook_secrets",
+  {
+    hookId: uuid("hook_id")
+      .primaryKey()
+      .references(() => hooks.id, { onDelete: "cascade" }),
+    accountId: uuid("account_id")
+      .notNull()
+      .references(() => accounts.id, { onDelete: "cascade" }),
+    ingressSecretHash: text("ingress_secret_hash").notNull().unique(),
+    rotatedAt: timestamp("rotated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.accountId, table.hookId],
+      foreignColumns: [hooks.accountId, hooks.id],
+      name: "hook_secrets_account_hook_fk",
+    }).onDelete("cascade"),
   ],
 );
 

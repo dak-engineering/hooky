@@ -8,6 +8,13 @@
       "when": 1786490390015,
       "tag": "0000_colossal_cardiac",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786491433034,
+      "tag": "0001_friendly_wendell_rand",
+      "breakpoints": true
     }
   ]
 }

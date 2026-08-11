@@ -109,19 +109,37 @@ export async function createTestDatabase() {
     migrationsFolder: resolve(import.meta.dir, "../../migrations"),
   });
 
+  async function seedAccount() {
+    const accountId = crypto.randomUUID();
+    await pool.query(`insert into accounts (id, name) values ($1, $2)`, [
+      accountId,
+      "Test account",
+    ]);
+    return { accountId };
+  }
+
   return {
     pool,
     async reset() {
-      await pool.query("truncate table accounts restart identity cascade");
+      await pool.query(
+        "truncate table auth_users, accounts restart identity cascade",
+      );
+    },
+    async seedAccount() {
+      return seedAccount();
+    },
+    async seedAuthUser({ name = "Test user" }: { name?: string } = {}) {
+      const userId = crypto.randomUUID();
+      const email = `${userId}@example.test`;
+      await pool.query(
+        `insert into auth_users (id, name, email) values ($1, $2, $3)`,
+        [userId, name, email],
+      );
+      return { userId, name, email };
     },
     async seedAccountAndHook() {
-      const accountId = crypto.randomUUID();
+      const { accountId } = await seedAccount();
       const hookId = crypto.randomUUID();
-
-      await pool.query(`insert into accounts (id, name) values ($1, $2)`, [
-        accountId,
-        "Test account",
-      ]);
       await pool.query(
         `insert into hooks (id, account_id, name) values ($1, $2, $3)`,
         [hookId, accountId, "stripe-dev"],
