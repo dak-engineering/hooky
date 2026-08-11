@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+.turbo/
+dist/
+out/
+
+# Test output
+playwright-report/
+test-results/
+coverage/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.DS_Store
+*.swp
+*.tsbuildinfo
