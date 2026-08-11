@@ -9,6 +9,8 @@
   ],
   "scripts": {
     "build": "turbo run build",
+    "db:generate": "bun run --cwd packages/database generate",
+    "db:migrate": "bun run --cwd packages/database migrate",
     "dev": "turbo run dev --filter=@hooky/web",
     "lint": "turbo run lint",
     "prettier": "prettier --write .",
