@@ -1,5 +1,6 @@
 import {
   AccountStore,
+  ApiTokenStore,
   createDatabasePool,
   createDrizzleDatabase,
   DeliveryStore,
@@ -24,5 +25,6 @@ if (process.env.NODE_ENV !== "production") {
 
 export const database = createDrizzleDatabase(databasePool);
 export const accountStore = new AccountStore(databasePool);
+export const apiTokenStore = new ApiTokenStore(databasePool);
 export const hookStore = new HookStore(databasePool);
 export const deliveryStore = new DeliveryStore(databasePool);

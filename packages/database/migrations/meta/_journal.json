@@ -15,6 +15,13 @@
       "when": 1786491433034,
       "tag": "0001_friendly_wendell_rand",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786491892517,
+      "tag": "0002_steep_scalphunter",
+      "breakpoints": true
     }
   ]
 }

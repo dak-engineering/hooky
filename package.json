@@ -2,6 +2,9 @@
   "name": "hooky",
   "version": "0.0.0",
   "private": true,
+  "bin": {
+    "hooky": "packages/cli/src/bin.ts"
+  },
   "packageManager": "bun@1.3.14",
   "workspaces": [
     "apps/*",
