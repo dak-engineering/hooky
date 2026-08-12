@@ -4,7 +4,7 @@ const repositoryUrl = "https://github.com/dak-engineering/hooky";
 
 export default function HomePage() {
   return (
-    <main>
+    <main className="landing-shell">
       <nav aria-label="Primary navigation" className="navigation">
         <Link aria-label="Hooky home" className="brand" href="/">
           <span aria-hidden="true" className="brand-mark">
@@ -12,9 +12,14 @@ export default function HomePage() {
           </span>
           <span>Hooky</span>
         </Link>
-        <a className="repository-link" href={repositoryUrl}>
-          GitHub
-        </a>
+        <div className="landing-nav-actions">
+          <Link className="sign-in-link" href="/sign-in">
+            Sign in
+          </Link>
+          <Link className="repository-link" href="/sign-up">
+            Start building
+          </Link>
+        </div>
       </nav>
 
       <section className="hero">
@@ -41,7 +46,8 @@ export default function HomePage() {
           </div>
           <div className="terminal" role="presentation">
             <p>
-              <span className="prompt">$</span> hooky listen stripe-dev
+              <span className="prompt">$</span> hooky listen --to
+              localhost:3000/webhooks --hook stripe-dev
             </p>
             <p className="muted">Public URL ready</p>
             <p className="url">https://hooks.example/e/wh_7vK9...</p>
@@ -59,9 +65,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer>
+      <footer className="landing-footer">
         <p>Durable ingress. Outbound local delivery. No public tunnel.</p>
-        <span>Milestone 0</span>
+        <a href={repositoryUrl}>Public on GitHub ↗</a>
       </footer>
     </main>
   );

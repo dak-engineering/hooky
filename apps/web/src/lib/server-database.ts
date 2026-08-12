@@ -4,6 +4,7 @@ import {
   createDatabasePool,
   createDrizzleDatabase,
   DeliveryStore,
+  EventStore,
   HookStore,
 } from "@hooky/database";
 
@@ -28,3 +29,4 @@ export const accountStore = new AccountStore(databasePool);
 export const apiTokenStore = new ApiTokenStore(databasePool);
 export const hookStore = new HookStore(databasePool);
 export const deliveryStore = new DeliveryStore(databasePool);
+export const eventStore = new EventStore(databasePool);

@@ -15,6 +15,7 @@
     "db:generate": "bun run --cwd packages/database generate",
     "db:migrate": "bun run --cwd packages/database migrate",
     "dev": "turbo run dev --filter=@hooky/web",
+    "e2e:server": "bun e2e/test-server.ts",
     "lint": "turbo run lint",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",

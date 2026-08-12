@@ -18,8 +18,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command:
-      "cd apps/web && exec ./node_modules/.bin/next dev --hostname 127.0.0.1",
+    command: "bun run e2e:server",
     url: "http://127.0.0.1:3000/api/health",
     reuseExistingServer: false,
     timeout: 120_000,

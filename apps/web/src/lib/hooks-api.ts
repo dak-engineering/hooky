@@ -18,7 +18,10 @@ function unauthorized() {
 }
 
 function ingressUrl(request: Request, token: string) {
-  return new URL(`/e/${token}`, request.url).toString();
+  return new URL(
+    `/e/${token}`,
+    process.env.BETTER_AUTH_URL ?? request.url,
+  ).toString();
 }
 
 export function createHooksCollectionHandlers({

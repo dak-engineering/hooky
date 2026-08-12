@@ -87,9 +87,11 @@ async function startEphemeralPostgres() {
     connectionString,
     async stop() {
       await pool.end();
-      execFileSync("pg_ctl", ["-D", dataDirectory, "stop", "-m", "fast"], {
-        stdio: "ignore",
-      });
+      if (process.exitCode === null && process.signalCode === null) {
+        execFileSync("pg_ctl", ["-D", dataDirectory, "stop", "-m", "fast"], {
+          stdio: "ignore",
+        });
+      }
       await rm(dataDirectory, { recursive: true, force: true });
     },
   };
@@ -119,6 +121,8 @@ export async function createTestDatabase() {
   }
 
   return {
+    connectionString:
+      configuredConnectionString ?? ephemeral?.connectionString ?? "",
     pool,
     async reset() {
       await pool.query(

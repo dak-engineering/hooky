@@ -6,5 +6,6 @@ export {
   HookUnavailableError,
   type ClaimedDelivery,
 } from "./delivery-store";
+export { EventStore } from "./event-store";
 export { HookStore } from "./hook-store";
 export * as schema from "./schema";

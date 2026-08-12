@@ -1,11 +1,18 @@
 import { auth } from "./auth";
 import { accountStore, apiTokenStore } from "./server-database";
 
-function hasTrustedOrigin(request: Request) {
+export function hasTrustedOrigin(request: Request) {
   if (["GET", "HEAD", "OPTIONS"].includes(request.method)) {
     return true;
   }
-  return request.headers.get("origin") === new URL(request.url).origin;
+  if (request.headers.get("sec-fetch-site") === "same-origin") {
+    return true;
+  }
+  const origin = request.headers.get("origin");
+  if (origin) {
+    return origin === new URL(request.url).origin;
+  }
+  return false;
 }
 
 export async function authenticateAccount(request: Request) {
