@@ -17,6 +17,30 @@ afterEach(async () => {
 });
 
 describe("CLI", () => {
+  test("uses the stable production service by default", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "hooky-cli-test-"));
+    temporaryDirectories.push(directory);
+    const configPath = join(directory, "config.json");
+    let requestedUrl = "";
+
+    await runCli({
+      args: ["login", "--token", "hky_secret"],
+      environment: {},
+      configPath,
+      fetchImplementation: async (input) => {
+        requestedUrl = new Request(input).url;
+        return Response.json({ hooks: [] });
+      },
+      writeOutput: () => undefined,
+    });
+
+    expect(requestedUrl).toBe("https://hooky-dak.vercel.app/api/v1/hooks");
+    expect(await readConfig(configPath)).toEqual({
+      apiUrl: "https://hooky-dak.vercel.app",
+      token: "hky_secret",
+    });
+  });
+
   test("validates a token before saving login credentials", async () => {
     const directory = await mkdtemp(join(tmpdir(), "hooky-cli-test-"));
     temporaryDirectories.push(directory);

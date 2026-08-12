@@ -2,7 +2,7 @@
 
 Hooky is a durable webhook inbox and local-development relay. A public Hooky URL accepts and stores a webhook before returning `202`, then the Hooky CLI leases that event and forwards its original method, path, query, headers, and bytes to localhost. Your development machine never exposes a public port.
 
-The hosted application is [hooky.vercel.app](https://hooky.vercel.app). The product plan and implementation decisions live in [PRD issue #1](https://github.com/dak-engineering/hooky/issues/1).
+The hosted application is [hooky-dak.vercel.app](https://hooky-dak.vercel.app). The product plan and implementation decisions live in [PRD issue #1](https://github.com/dak-engineering/hooky/issues/1).
 
 ## Use Hooky
 

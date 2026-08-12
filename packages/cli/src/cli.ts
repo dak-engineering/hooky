@@ -3,7 +3,7 @@ import { HookyApiClient } from "./api-client";
 import { defaultConfigPath, readConfig, writeConfig } from "./config";
 import { listenForDeliveries, selectHook } from "./listener";
 
-const defaultApiUrl = "https://hooky.vercel.app";
+const defaultApiUrl = "https://hooky-dak.vercel.app";
 
 const usage = `Hooky — deliver public webhooks to a local endpoint
 
