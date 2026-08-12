@@ -8,4 +8,5 @@ export {
 } from "./delivery-store";
 export { EventStore } from "./event-store";
 export { HookStore } from "./hook-store";
+export { RetentionStore } from "./retention-store";
 export * as schema from "./schema";

@@ -41,6 +41,7 @@ describe("ingress handler", () => {
     );
 
     expect(response.status).toBe(202);
+    expect(response.headers.get("x-request-id")).toMatch(/^[0-9a-f-]{36}$/);
     expect(await response.json()).toEqual({
       deliveryId: "delivery-one",
       eventId: "event-one",
@@ -49,6 +50,41 @@ describe("ingress handler", () => {
       "resolve:hk_token",
       "record:start",
       "record:committed",
+    ]);
+  });
+
+  test("preserves an upstream Vercel request id for correlation", async () => {
+    const logs: Record<string, unknown>[] = [];
+    const handler = createIngressHandler({
+      maxBodyBytes: 1024,
+      resolveIngressToken: async () => ({
+        accountId: "account-one",
+        hookId: "hook-one",
+      }),
+      recordWebhookEvent: async () => ({
+        eventId: "event-one",
+        deliveryId: "delivery-one",
+      }),
+      log: (entry) => logs.push(entry),
+    });
+
+    const response = await handler(
+      new Request("https://hooky.test/e/token", {
+        method: "POST",
+        headers: { "x-vercel-id": "sfo1::abc-123" },
+      }),
+      { token: "token", path: [] },
+    );
+
+    expect(response.headers.get("x-request-id")).toBe("sfo1::abc-123");
+    expect(logs).toEqual([
+      expect.objectContaining({
+        level: "info",
+        message: "webhook.accepted",
+        requestId: "sfo1::abc-123",
+        method: "POST",
+        bodyBytes: 0,
+      }),
     ]);
   });
 

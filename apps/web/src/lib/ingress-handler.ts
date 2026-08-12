@@ -27,6 +27,7 @@ export function createIngressHandler({
   maxBodyBytes,
   resolveIngressToken,
   recordWebhookEvent,
+  log = (entry) => console.log(JSON.stringify(entry)),
 }: {
   maxBodyBytes: number;
   resolveIngressToken: (token: string) => Promise<ResolvedHook | null>;
@@ -40,27 +41,40 @@ export function createIngressHandler({
     body: Buffer;
     receivedAt: Date;
   }) => Promise<RecordedWebhook>;
+  log?: (entry: Record<string, unknown>) => void;
 }) {
   return async function handleIngress(
     request: Request,
     { token, path }: { token: string; path: string[] },
   ) {
+    const startedAt = Date.now();
+    const requestId = request.headers.get("x-vercel-id") ?? crypto.randomUUID();
+    const responseHeaders = {
+      "cache-control": "no-store",
+      "x-request-id": requestId,
+    };
     const contentLength = Number(request.headers.get("content-length"));
     if (Number.isFinite(contentLength) && contentLength > maxBodyBytes) {
-      return Response.json({ error: "Payload too large" }, { status: 413 });
+      return Response.json(
+        { error: "Payload too large" },
+        { status: 413, headers: responseHeaders },
+      );
     }
 
     const resolved = await resolveIngressToken(token);
     if (!resolved) {
       return Response.json(
         { error: "Webhook endpoint not found" },
-        { status: 404 },
+        { status: 404, headers: responseHeaders },
       );
     }
 
     const body = Buffer.from(await request.arrayBuffer());
     if (body.byteLength > maxBodyBytes) {
-      return Response.json({ error: "Payload too large" }, { status: 413 });
+      return Response.json(
+        { error: "Payload too large" },
+        { status: 413, headers: responseHeaders },
+      );
     }
 
     try {
@@ -74,14 +88,35 @@ export function createIngressHandler({
         receivedAt: new Date(),
       });
 
+      log({
+        level: "info",
+        message: "webhook.accepted",
+        requestId,
+        eventId: recorded.eventId,
+        hookId: resolved.hookId,
+        method: request.method,
+        bodyBytes: body.byteLength,
+        durationMs: Date.now() - startedAt,
+      });
+
       return Response.json(recorded, {
         status: 202,
-        headers: { "cache-control": "no-store" },
+        headers: responseHeaders,
       });
-    } catch {
+    } catch (error) {
+      log({
+        level: "error",
+        message: "webhook.failed",
+        requestId,
+        hookId: resolved.hookId,
+        method: request.method,
+        bodyBytes: body.byteLength,
+        errorType: error instanceof Error ? error.name : "UnknownError",
+        durationMs: Date.now() - startedAt,
+      });
       return Response.json(
         { error: "Webhook could not be durably accepted" },
-        { status: 503 },
+        { status: 503, headers: responseHeaders },
       );
     }
   };

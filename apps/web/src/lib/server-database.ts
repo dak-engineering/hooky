@@ -6,7 +6,9 @@ import {
   DeliveryStore,
   EventStore,
   HookStore,
+  RetentionStore,
 } from "@hooky/database";
+import { attachDatabasePool } from "@vercel/functions";
 
 const connectionString =
   process.env.DATABASE_URL ??
@@ -20,6 +22,8 @@ export const databasePool =
   globalDatabase.hookyPool ??
   createDatabasePool({ connectionString, maxConnections: 3 });
 
+attachDatabasePool(databasePool);
+
 if (process.env.NODE_ENV !== "production") {
   globalDatabase.hookyPool = databasePool;
 }
@@ -30,3 +34,4 @@ export const apiTokenStore = new ApiTokenStore(databasePool);
 export const hookStore = new HookStore(databasePool);
 export const deliveryStore = new DeliveryStore(databasePool);
 export const eventStore = new EventStore(databasePool);
+export const retentionStore = new RetentionStore(databasePool);
