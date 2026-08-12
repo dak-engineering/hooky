@@ -8,7 +8,8 @@
         "BETTER_AUTH_URL",
         "CRON_SECRET",
         "DATABASE_URL",
-        "RETENTION_DAYS"
+        "RETENTION_DAYS",
+        "VERCEL_URL"
       ],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },

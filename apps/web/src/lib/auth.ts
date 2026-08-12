@@ -4,6 +4,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 
 import { database } from "./server-database";
+import { resolveDeploymentOrigin } from "./deployment-origin";
 
 const fallbackDevelopmentSecret =
   "hooky-development-only-secret-change-before-deploying";
@@ -12,11 +13,7 @@ if (process.env.VERCEL && !process.env.BETTER_AUTH_SECRET) {
   throw new Error("BETTER_AUTH_SECRET is required on Vercel");
 }
 
-if (process.env.VERCEL && !process.env.BETTER_AUTH_URL) {
-  throw new Error("BETTER_AUTH_URL is required on Vercel");
-}
-
-const configuredOrigin = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+const configuredOrigin = resolveDeploymentOrigin(process.env);
 
 export function createHookyAuth({
   database,
