@@ -9,6 +9,7 @@ import {
   EventInspector,
   HookActions,
 } from "@/components/dashboard-controls";
+import { BrandMark } from "@/components/brand-mark";
 import { ArrowIcon, CheckIcon, GridIcon, HookIcon } from "@/components/icons";
 import { auth } from "@/lib/auth";
 import {
@@ -115,9 +116,10 @@ export default async function DashboardPage({
     <main className="dashboard-shell">
       <aside className="dashboard-sidebar">
         <Link aria-label="Hooky home" className="dashboard-brand" href="/">
-          <span className="brand-mark">H</span>
-          Hooky
+          <BrandMark />
+          <span>Hooky</span>
         </Link>
+        <p className="sidebar-section-label">Workspace</p>
         <nav aria-label="Dashboard navigation" className="sidebar-navigation">
           <Link className="sidebar-link" href="/dashboard">
             <GridIcon /> Overview
@@ -134,7 +136,7 @@ export default async function DashboardPage({
           />
         </nav>
         <div className="sidebar-hooks" id="hooks">
-          <p>Hooks</p>
+          <p>Endpoints</p>
           {hooks.map((hook) => (
             <Link
               className={
@@ -159,6 +161,7 @@ export default async function DashboardPage({
       <section className="dashboard-workspace">
         <header className="dashboard-header">
           <div>
+            <span className="dashboard-eyebrow">Hook endpoint</span>
             <h1>{selectedHook?.name ?? "Your hooks"}</h1>
             <p>
               {selectedHook ? (
@@ -174,16 +177,22 @@ export default async function DashboardPage({
         </header>
 
         <div className="command-strip">
-          <code>
-            <span>$</span> {command}
-          </code>
+          <div>
+            <span>Listener command</span>
+            <code>
+              <b>$</b> {command}
+            </code>
+          </div>
           <CommandCopy command={command} />
         </div>
 
         <div className="dashboard-content">
           <section className="events-region">
             <div className="events-heading">
-              <h2>Recent events</h2>
+              <div>
+                <h2>Recent events</h2>
+                <p>Requests captured by this endpoint.</p>
+              </div>
               {selectedHook ? (
                 <div className="status-filters">
                   {[
@@ -261,7 +270,8 @@ export default async function DashboardPage({
             <div className="cli-install">
               <span aria-hidden="true">›_</span>
               <p>
-                Install Hooky CLI<code>bunx github:dak-engineering/hooky</code>
+                <strong>Install the Hooky CLI</strong>
+                <code>bunx github:dak-engineering/hooky</code>
               </p>
               <CommandCopy command="bunx github:dak-engineering/hooky" />
             </div>
@@ -270,6 +280,7 @@ export default async function DashboardPage({
           <aside className="event-inspector">
             {selectedEvent ? (
               <>
+                <span className="inspector-kicker">Event detail</span>
                 <div className="inspector-heading">
                   <div>
                     <h2>

@@ -1,19 +1,27 @@
 import Link from "next/link";
 
+import { AuthAside } from "@/components/auth-aside";
 import { AuthForm } from "@/components/auth-form";
+import { BrandMark } from "@/components/brand-mark";
 
 export default function SignUpPage() {
   return (
     <main className="auth-shell">
-      <Link aria-label="Hooky home" className="auth-brand" href="/">
-        <span className="brand-mark">H</span>
-        Hooky
-      </Link>
-      <section className="auth-panel">
-        <h1>Create your workspace.</h1>
-        <p>Start with one durable endpoint. Add the CLI when you are ready.</p>
-        <AuthForm mode="sign-up" />
-      </section>
+      <div className="auth-main">
+        <Link aria-label="Hooky home" className="brand auth-brand" href="/">
+          <BrandMark /> <span>Hooky</span>
+        </Link>
+        <section className="auth-panel">
+          <span className="section-kicker">Create a workspace</span>
+          <h1>Start with one endpoint.</h1>
+          <p>Add the CLI when localhost is ready. Hooky will wait.</p>
+          <AuthForm mode="sign-up" />
+        </section>
+        <p className="auth-legal">
+          No credit card. Public repository. Your data stays yours.
+        </p>
+      </div>
+      <AuthAside mode="sign-up" />
     </main>
   );
 }

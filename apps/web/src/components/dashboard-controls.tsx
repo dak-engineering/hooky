@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 
 import { authClient } from "@/lib/auth-client";
 
@@ -26,8 +27,19 @@ function CopyButton({
       }}
       type="button"
     >
-      <CopyIcon />
-      {copied ? "Copied" : label}
+      <AnimatePresence initial={false} mode="wait">
+        <motion.span
+          animate={{ opacity: 1, transform: "translateY(0)" }}
+          className="copy-button-content"
+          exit={{ opacity: 0, transform: "translateY(4px)" }}
+          initial={{ opacity: 0, transform: "translateY(-4px)" }}
+          key={copied ? "copied" : "copy"}
+          transition={{ duration: 0.12 }}
+        >
+          <CopyIcon />
+          {copied ? "Copied" : label}
+        </motion.span>
+      </AnimatePresence>
     </button>
   );
 }
@@ -50,15 +62,23 @@ function Modal({
   }, [close]);
 
   return (
-    <div
+    <motion.div
+      animate={{ opacity: 1 }}
       className="modal-backdrop"
+      exit={{ opacity: 0 }}
+      initial={{ opacity: 0 }}
       onMouseDown={(event) => event.target === event.currentTarget && close()}
+      transition={{ duration: 0.16 }}
     >
-      <section
+      <motion.section
+        animate={{ opacity: 1, transform: "translateY(0) scale(1)" }}
         aria-labelledby="modal-title"
         aria-modal="true"
         className="modal"
+        exit={{ opacity: 0, transform: "translateY(6px) scale(0.985)" }}
+        initial={{ opacity: 0, transform: "translateY(10px) scale(0.98)" }}
         role="dialog"
+        transition={{ duration: 0.22, ease: [0.19, 1, 0.22, 1] }}
       >
         <div className="modal-heading">
           <h2 id="modal-title">{title}</h2>
@@ -72,8 +92,8 @@ function Modal({
           </button>
         </div>
         {children}
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 }
 
@@ -153,68 +173,72 @@ export function HookActions({ hookId }: { hookId: string | undefined }) {
           Rotate URL
         </button>
       </div>
-      {mode ? (
-        <Modal
-          close={close}
-          title={
-            secretUrl
-              ? "Webhook URL created"
-              : mode === "create"
-                ? "Create a hook"
-                : "Rotate webhook URL"
-          }
-        >
-          {secretUrl ? (
-            <div className="secret-result">
-              <p>Copy it now. For security, Hooky only shows this URL once.</p>
-              <div className="secret-field">
-                <code>{secretUrl}</code>
-                <CopyButton label="Copy URL" value={secretUrl} />
+      <AnimatePresence initial={false}>
+        {mode ? (
+          <Modal
+            close={close}
+            title={
+              secretUrl
+                ? "Webhook URL created"
+                : mode === "create"
+                  ? "Create a hook"
+                  : "Rotate webhook URL"
+            }
+          >
+            {secretUrl ? (
+              <div className="secret-result">
+                <p>
+                  Copy it now. For security, Hooky only shows this URL once.
+                </p>
+                <div className="secret-field">
+                  <code>{secretUrl}</code>
+                  <CopyButton label="Copy URL" value={secretUrl} />
+                </div>
+                <div className="modal-actions">
+                  <button
+                    className="button button-secondary"
+                    onClick={close}
+                    type="button"
+                  >
+                    Done
+                  </button>
+                </div>
               </div>
-              <div className="modal-actions">
-                <button
-                  className="button button-secondary"
-                  onClick={close}
-                  type="button"
-                >
-                  Done
-                </button>
+            ) : mode === "create" ? (
+              <form action={create} className="modal-form">
+                <p>Give this endpoint a name you’ll recognize locally.</p>
+                <label>
+                  Hook name
+                  <input
+                    autoFocus
+                    maxLength={80}
+                    name="name"
+                    placeholder="stripe-staging"
+                    required
+                  />
+                </label>
+                {error ? <p className="form-error">{error}</p> : null}
+                <div className="modal-actions">
+                  <button
+                    className="button button-secondary"
+                    onClick={close}
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                  <button className="button button-primary" disabled={pending}>
+                    {pending ? "Creating…" : "Create hook"}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="modal-form">
+                <p>{error || "Creating a new URL and revoking the old one…"}</p>
               </div>
-            </div>
-          ) : mode === "create" ? (
-            <form action={create} className="modal-form">
-              <p>Give this endpoint a name you’ll recognize locally.</p>
-              <label>
-                Hook name
-                <input
-                  autoFocus
-                  maxLength={80}
-                  name="name"
-                  placeholder="stripe-staging"
-                  required
-                />
-              </label>
-              {error ? <p className="form-error">{error}</p> : null}
-              <div className="modal-actions">
-                <button
-                  className="button button-secondary"
-                  onClick={close}
-                  type="button"
-                >
-                  Cancel
-                </button>
-                <button className="button button-primary" disabled={pending}>
-                  {pending ? "Creating…" : "Create hook"}
-                </button>
-              </div>
-            </form>
-          ) : (
-            <div className="modal-form">
-              <p>{error || "Creating a new URL and revoking the old one…"}</p>
-            </div>
-          )}
-        </Modal>
-      ) : null}
+            )}
+          </Modal>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }
@@ -272,83 +296,85 @@ export function ApiKeysControl({
         <KeyIcon />
         API keys
       </button>
-      {open ? (
-        <Modal
-          close={() => {
-            setOpen(false);
-            setSecret("");
-            setError("");
-          }}
-          title={secret ? "API key created" : "API keys"}
-        >
-          {secret ? (
-            <div className="secret-result">
-              <p>
-                Copy it now. For security, Hooky only shows this token once.
-              </p>
-              <div className="secret-field">
-                <code>{secret}</code>
-                <CopyButton value={secret} />
+      <AnimatePresence initial={false}>
+        {open ? (
+          <Modal
+            close={() => {
+              setOpen(false);
+              setSecret("");
+              setError("");
+            }}
+            title={secret ? "API key created" : "API keys"}
+          >
+            {secret ? (
+              <div className="secret-result">
+                <p>
+                  Copy it now. For security, Hooky only shows this token once.
+                </p>
+                <div className="secret-field">
+                  <code>{secret}</code>
+                  <CopyButton value={secret} />
+                </div>
+                <div className="modal-actions">
+                  <button
+                    className="button button-secondary"
+                    onClick={() => {
+                      setSecret("");
+                      setOpen(false);
+                    }}
+                    type="button"
+                  >
+                    Done
+                  </button>
+                </div>
               </div>
-              <div className="modal-actions">
-                <button
-                  className="button button-secondary"
-                  onClick={() => {
-                    setSecret("");
-                    setOpen(false);
-                  }}
-                  type="button"
-                >
-                  Done
-                </button>
-              </div>
-            </div>
-          ) : (
-            <>
-              <form action={create} className="modal-form compact-form">
-                <label>
-                  Key name
-                  <input
-                    autoFocus
-                    maxLength={80}
-                    name="name"
-                    placeholder="MacBook listener"
-                    required
-                  />
-                </label>
-                {error ? <p className="form-error">{error}</p> : null}
-                <button className="button button-primary" disabled={pending}>
-                  {pending ? "Creating…" : "Create API key"}
-                </button>
-              </form>
-              <div className="token-list">
-                {tokens.length ? (
-                  tokens.map((token) => (
-                    <div className="token-row" key={token.tokenId}>
-                      <span>
-                        <strong>{token.name}</strong>
-                        <code>{token.prefix}…</code>
-                      </span>
-                      {token.revokedAt ? (
-                        <em>Revoked</em>
-                      ) : (
-                        <button
-                          onClick={() => revoke(token.tokenId)}
-                          type="button"
-                        >
-                          Revoke
-                        </button>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p className="empty-note">No API keys yet.</p>
-                )}
-              </div>
-            </>
-          )}
-        </Modal>
-      ) : null}
+            ) : (
+              <>
+                <form action={create} className="modal-form compact-form">
+                  <label>
+                    Key name
+                    <input
+                      autoFocus
+                      maxLength={80}
+                      name="name"
+                      placeholder="MacBook listener"
+                      required
+                    />
+                  </label>
+                  {error ? <p className="form-error">{error}</p> : null}
+                  <button className="button button-primary" disabled={pending}>
+                    {pending ? "Creating…" : "Create API key"}
+                  </button>
+                </form>
+                <div className="token-list">
+                  {tokens.length ? (
+                    tokens.map((token) => (
+                      <div className="token-row" key={token.tokenId}>
+                        <span>
+                          <strong>{token.name}</strong>
+                          <code>{token.prefix}…</code>
+                        </span>
+                        {token.revokedAt ? (
+                          <em>Revoked</em>
+                        ) : (
+                          <button
+                            onClick={() => revoke(token.tokenId)}
+                            type="button"
+                          >
+                            Revoke
+                          </button>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="empty-note">No API keys yet.</p>
+                  )}
+                </div>
+              </>
+            )}
+          </Modal>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }
@@ -405,9 +431,18 @@ export function EventInspector({
           </button>
         ))}
       </div>
-      <pre className="payload-view">
-        <code>{value}</code>
-      </pre>
+      <AnimatePresence initial={false} mode="wait">
+        <motion.pre
+          animate={{ opacity: 1, transform: "translateX(0)" }}
+          className="payload-view"
+          exit={{ opacity: 0, transform: "translateX(-8px)" }}
+          initial={{ opacity: 0, transform: "translateX(8px)" }}
+          key={tab}
+          transition={{ duration: 0.14, ease: [0.19, 1, 0.22, 1] }}
+        >
+          <code>{value}</code>
+        </motion.pre>
+      </AnimatePresence>
     </>
   );
 }
