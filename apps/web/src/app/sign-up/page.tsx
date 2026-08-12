@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AuthAside } from "@/components/auth-aside";
+import { AuthFooter } from "@/components/auth-footer";
 import { AuthForm } from "@/components/auth-form";
 import { BrandMark } from "@/components/brand-mark";
 
@@ -17,9 +18,7 @@ export default function SignUpPage() {
           <p>Add the CLI when localhost is ready. Hooky will wait.</p>
           <AuthForm mode="sign-up" />
         </section>
-        <p className="auth-legal">
-          No credit card. Public repository. Your data stays yours.
-        </p>
+        <AuthFooter note="No credit card. Public repository. Your data stays yours." />
       </div>
       <AuthAside mode="sign-up" />
     </main>

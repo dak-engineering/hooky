@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AuthAside } from "@/components/auth-aside";
+import { AuthFooter } from "@/components/auth-footer";
 import { AuthForm } from "@/components/auth-form";
 import { BrandMark } from "@/components/brand-mark";
 
@@ -17,9 +18,7 @@ export default function SignInPage() {
           <p>Everything your local environment missed is waiting.</p>
           <AuthForm mode="sign-in" />
         </section>
-        <p className="auth-legal">
-          By continuing, you agree to use Hooky responsibly.
-        </p>
+        <AuthFooter note="By continuing, you agree to use Hooky responsibly." />
       </div>
       <AuthAside mode="sign-in" />
     </main>
