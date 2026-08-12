@@ -11,6 +11,8 @@ test("introduces Hooky and its core promise", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Webhooks, on your time." }),
   ).toBeVisible();
+  await expect(page.locator(".landing-hero h1")).toHaveCSS("font-size", "72px");
+  await expect(page.locator(".hero-copy > p")).toHaveCSS("font-size", "20px");
   await expect(
     page.getByText(
       "Hooky receives and stores every event in the cloud, then delivers it to localhost the moment your environment is ready.",
@@ -50,6 +52,8 @@ test("stacks the signal cleanly on a phone", async ({ page }) => {
   await expect(
     page.getByRole("link", { name: "Create an endpoint" }),
   ).toBeVisible();
+  await expect(page.locator(".landing-hero h1")).toHaveCSS("font-size", "48px");
+  await expect(page.locator(".hero-copy > p")).toHaveCSS("font-size", "18px");
 
   const dimensions = await page
     .locator(".relay-rail.first")

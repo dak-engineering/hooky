@@ -12,6 +12,18 @@ test("creates a hook, captures an event, and creates a CLI key", async ({
   await page.getByRole("button", { name: "Create account" }).click();
 
   await expect(page).toHaveURL(/\/dashboard/);
+  await expect(page.locator(".dashboard-header h1")).toHaveCSS(
+    "font-size",
+    "30px",
+  );
+  await expect(page.locator(".sidebar-link").first()).toHaveCSS(
+    "font-size",
+    "14px",
+  );
+  await expect(page.locator(".dashboard-eyebrow")).toHaveCSS(
+    "font-size",
+    "12px",
+  );
   await page.getByRole("button", { name: "New hook" }).click();
   await page.getByLabel("Hook name").fill("stripe-e2e");
   await page.getByRole("button", { name: "Create hook" }).click();
