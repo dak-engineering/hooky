@@ -1,4 +1,5 @@
 export { createDatabasePool, createDrizzleDatabase } from "./database";
+export { normalizePostgresConnectionString } from "./connection-string";
 export { AccountStore, type AccountMembership } from "./account-store";
 export { ApiTokenStore } from "./api-token-store";
 export {

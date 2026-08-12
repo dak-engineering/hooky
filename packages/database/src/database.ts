@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
+import { normalizePostgresConnectionString } from "./connection-string";
 import * as schema from "./schema";
 
 export function createDatabasePool({
@@ -11,7 +12,7 @@ export function createDatabasePool({
   maxConnections?: number;
 }) {
   return new Pool({
-    connectionString,
+    connectionString: normalizePostgresConnectionString(connectionString),
     max: maxConnections,
   });
 }
