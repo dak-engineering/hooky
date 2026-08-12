@@ -6,6 +6,7 @@ node_modules/
 .turbo/
 dist/
 out/
+.vercel/
 
 # Test output
 playwright-report/

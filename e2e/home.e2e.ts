@@ -1,7 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 test("introduces Hooky and its core promise", async ({ page }) => {
-  await page.goto("/");
+  const response = await page.goto("/");
+
+  expect(response?.headers()["x-content-type-options"]).toBe("nosniff");
+  expect(response?.headers()["referrer-policy"]).toBe(
+    "strict-origin-when-cross-origin",
+  );
 
   await expect(
     page.getByRole("heading", { name: "Webhooks should wait for you." }),

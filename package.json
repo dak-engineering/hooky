@@ -2,6 +2,9 @@
   "name": "hooky",
   "version": "0.0.0",
   "private": true,
+  "bin": {
+    "hooky": "packages/cli/src/bin.ts"
+  },
   "packageManager": "bun@1.3.14",
   "workspaces": [
     "apps/*",
@@ -9,7 +12,10 @@
   ],
   "scripts": {
     "build": "turbo run build",
+    "db:generate": "bun run --cwd packages/database generate",
+    "db:migrate": "bun run --cwd packages/database migrate",
     "dev": "turbo run dev --filter=@hooky/web",
+    "e2e:server": "bun e2e/test-server.ts",
     "lint": "turbo run lint",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
