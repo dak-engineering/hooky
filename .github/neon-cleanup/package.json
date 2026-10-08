@@ -1,0 +1,11 @@
+{
+  "name": "neon-pr-cleanup-checks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "bunx --bun oxlint@1.87.0 --config lint-config.json --deny-warnings cleanup.mjs run.mjs tests",
+    "prettier": "bunx prettier@3.9.9 --config format-config.json --check . ../workflows/neon-preview-cleanup.yml ../workflows/neon-cleanup-check.yml",
+    "test": "bun test",
+    "test:e2e": "bun test tests/e2e"
+  }
+}

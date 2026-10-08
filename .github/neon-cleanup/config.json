@@ -1,0 +1,13 @@
+{
+  "repository": "dak-engineering/hooky",
+  "projectId": "frosty-mouse-25883459",
+  "permanentBranchIds": ["br-spring-art-a6d5ruas"],
+  "permanentBranchNames": [
+    "develop",
+    "development",
+    "main",
+    "master",
+    "production",
+    "staging"
+  ]
+}

@@ -1,0 +1,37 @@
+name: Clean up Neon preview
+on:
+  pull_request_target:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Closed pull request number to inspect
+        required: true
+        type: string
+      dry_run:
+        description: Report without deleting
+        type: boolean
+        default: true
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: neon-preview-cleanup
+  cancel-in-progress: false
+jobs:
+  cleanup:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # Always use trusted default-branch code, including for manual runs.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+          sparse-checkout: .github/neon-cleanup
+      - name: Delete only the verified PR preview branch
+        run: node .github/neon-cleanup/run.mjs
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
